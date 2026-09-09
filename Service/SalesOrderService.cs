@@ -2,6 +2,8 @@ using ExcelMerger.Data;
 using ExcelMerger.Models;
 using Microsoft.EntityFrameworkCore;
 
+namespace ExcelMerger.Service;
+
 public class SalesOrderService
 {
     private readonly AppDbContext db;

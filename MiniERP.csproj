@@ -21,4 +21,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="MiniERP.API\**" />
+    <EmbeddedResource Remove="MiniERP.API\**" />
+    <None Remove="MiniERP.API\**" />
+  </ItemGroup>
+
 </Project>

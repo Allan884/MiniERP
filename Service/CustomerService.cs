@@ -1,7 +1,8 @@
 using ExcelMerger.Data;
+using ExcelMerger.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExcelMerger.Models;
+namespace ExcelMerger.Service;
 
 public class CustomerService
 {
