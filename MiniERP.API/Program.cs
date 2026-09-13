@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 builder.Services.AddOpenApi();
+builder.Services.AddControllers(); // lisa kontrollerite teenused
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
@@ -19,6 +20,7 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<SalesOrderService>();
 
 var app = builder.Build();
+app.MapControllers(); // Pane kontrollerite endpointid HTTP kaudu kättesaadavaks
 
 
 // Configure the HTTP request pipeline.
