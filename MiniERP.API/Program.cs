@@ -20,6 +20,8 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<SalesOrderService>();
 
 var app = builder.Build();
+app.UseDefaultFiles();   // Otsib automaatselt wwwroot seest index.html faili
+app.UseStaticFiles(); // Lubab staatiliste failide (HTML, CSS, JS) serveerimist
 app.MapControllers(); // Pane kontrollerite endpointid HTTP kaudu kättesaadavaks
 
 

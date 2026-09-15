@@ -20,4 +20,22 @@ public class SalesOrderController : ControllerBase // Inherit from ControllerBas
     {
         return salesOrderService.GetSalesOrders();
     }
+
+    [HttpGet("{id}")] // GET api/salesorders/id
+    public ActionResult<SalesOrder> GetSalesOrderById(Guid id)
+    {
+        var salesOrder = salesOrderService.GetOrderById(id);
+        if (salesOrder == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(salesOrder);
+    }
+
+    [HttpPost] // POST api/salesorders
+    public IActionResult CreateSalesOrder([FromBody] SalesOrder salesOrder)
+    {
+        return Ok(salesOrder);
+    }
 }

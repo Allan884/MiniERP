@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <title>MiniERP</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>MiniERP</h1>
+
+<h2>Create Sales Order</h2>
+
+<label>
+    Customer GUID:
+    <input id="customerId" type="text" value="d3b07384-d113-4956-d7ec-08dcf2f36d32">
+</label>
+
+<br>
+
+<label>
+    Order Number:
+    <input id="orderNumber" type="text" value="SO-2026-001">
+</label>
+
+<br><br>
+<h3>Order Line Items</h3>
+
+<label>
+    Product GUID:
+    <input id="productId" type="text" value="a1e67542-c224-4867-b5ba-12dcf2f36d99">
+</label>
+
+<br>
+
+<label>
+    Quantity:
+    <input id="quantity" type="number" value="5">
+</label>
+
+<br>
+
+<label>
+    Unit Price:
+    <input id="unitPrice" type="number" step="0.01" value="19.99">
+</label>
+
+<br><br>
+
+<button onclick="createSalesOrder()">
+    Create Sales Order
+</button>
+
+<h2>API Response</h2>
+
+<pre id="response">
+Waiting...
+</pre>
+
+<script>
+async function createSalesOrder() {
+    // Structure the payload to match your C# domain object layout
+    const request = {
+        customerId: document.getElementById("customerId").value,
+        orderNumber: document.getElementById("orderNumber").value,
+        salesOrderLines: [
+            {
+                productId: document.getElementById("productId").value,
+                quantity: Number(document.getElementById("quantity").value),
+                unitPrice: Number(document.getElementById("unitPrice").value)
+            }
+        ]
+    };
+
+    try {
+        const response = await fetch("/api/salesorders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(request)
+        });
+
+        const data = await response.json();
+        document.getElementById("response").className = "success";
+        document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+
+    } catch (error) {
+        document.getElementById("response").className = "error";
+        document.getElementById("response").textContent = "Error: " + error.message;
+    }
+}
+</script>
+
+</body>
+</html>
