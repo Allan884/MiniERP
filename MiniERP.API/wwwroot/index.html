@@ -92,17 +92,9 @@ Waiting...
 
 <script>
 async function createSalesOrder() {
-    // Structure the payload to match your C# domain object layout
-    const request = {
+        const request = {
         customerId: document.getElementById("customerId").value,
-        orderNumber: document.getElementById("orderNumber").value,
-        salesOrderLines: [
-            {
-                productId: document.getElementById("productId").value,
-                quantity: Number(document.getElementById("quantity").value),
-                unitPrice: Number(document.getElementById("unitPrice").value)
-            }
-        ]
+        
     };
 
     try {

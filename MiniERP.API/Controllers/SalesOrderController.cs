@@ -1,6 +1,8 @@
 using ExcelMerger.Service;
 using ExcelMerger.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.Common;
+using ExcelMerger.Exceptions;
 
 namespace MiniERP.API.Controllers;
 
@@ -8,10 +10,12 @@ namespace MiniERP.API.Controllers;
 public class SalesOrderController : ControllerBase // Inherit from ControllerBase for API controllers
 {
     private readonly SalesOrderService salesOrderService;
+    private readonly ProductService productService;
 
-    public SalesOrderController(SalesOrderService salesOrderService) 
+    public SalesOrderController(SalesOrderService salesOrderService, ProductService productService) 
     {
         this.salesOrderService = salesOrderService;
+        this.productService = productService;
     }
 
 
@@ -34,8 +38,42 @@ public class SalesOrderController : ControllerBase // Inherit from ControllerBas
     }
 
     [HttpPost] // POST api/salesorders
-    public IActionResult CreateSalesOrder([FromBody] SalesOrder salesOrder)
+    public IActionResult CreateSalesOrder([FromBody] CreateSalesOrderRequest request)
     {
-        return Ok(salesOrder);
+        var customerId = request.CustomerId;
+        var salesOrder = salesOrderService.CreateSalesOrder(customerId);
+
+        var response = new SalesOrderResponse
+        {
+            CustomerId = salesOrder.CustomerId,
+            OrderNumber = salesOrder.OrderNumber
+        };
+
+        return Ok(response);
+    }
+
+    [HttpPost("{orderNumber}/lines")]
+    public IActionResult AddSalesOrderLine(
+        string orderNumber,
+        [FromBody] CreateSalesOrderLineRequest request)
+    {
+        Console.WriteLine($"Order number: {orderNumber}");
+        
+        var productId = request.ProductId;
+        var quantity = request.Quantity;
+        var deliveryDate = request.DeliveryDate;
+
+
+        try
+        {
+           salesOrderService.AddLineToSalesOrder(orderNumber, productId, quantity, deliveryDate); 
+ 
+        }
+        catch (ProductNotFoundException)
+        {
+            return NotFound();
+        }
+
+        return Ok();
     }
 }
