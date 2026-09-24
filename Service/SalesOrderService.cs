@@ -1,5 +1,6 @@
 using ExcelMerger.Data;
 using ExcelMerger.Models;
+using ExcelMerger.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExcelMerger.Service;
@@ -91,7 +92,7 @@ public class SalesOrderService
 
         if (product == null)
         {
-            throw new ArgumentException("Product does not exist.");
+            throw new ProductNotFoundException("Product does not exist.");
         }
 
         var line = new SalesOrderLine(product.Id, order.Id, product.Name, quantity, product.Price, deliveryDate);
@@ -105,6 +106,13 @@ public class SalesOrderService
         return db.SalesOrders
         .Include(o => o.SalesOrderLines)
         .FirstOrDefault(o => o.OrderNumber == orderNumber);
+    }
+
+    public SalesOrder? GetOrderById(Guid id)
+    {
+        return db.SalesOrders
+        .Include(o => o.SalesOrderLines)
+        .FirstOrDefault(o => o.Id == id);
     }
 
     public decimal GetOrderTotalPrice(string orderNumber)
