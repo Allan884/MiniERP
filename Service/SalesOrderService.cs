@@ -43,7 +43,7 @@ public class SalesOrderService
 
         if (customer == null)
         {
-            throw new ArgumentException("Customer does not exist.");
+            throw new CustomerNotFoundException("Customer does not exist.");
         }
 
 
@@ -80,12 +80,12 @@ public class SalesOrderService
         return $"SO-{nextNumber:D3}";
     }
 
-    public void AddLineToSalesOrder(string orderNumber, Guid productId, int quantity, DateOnly deliveryDate)
+    public SalesOrderLine AddLineToSalesOrder(string orderNumber, Guid productId, int quantity, DateOnly deliveryDate)
     {
         var order = GetOrderByNumber(orderNumber);
         if (order == null)
         {
-            throw new ArgumentException("Order does not exist.");
+            throw new OrderNotFoundException("Order does not exist.");
         }
         
         var product = productService.GetProductById(productId);
@@ -99,6 +99,8 @@ public class SalesOrderService
         order.AddLine(line);
         db.SalesOrderLines.Add(line);
         db.SaveChanges();
+
+        return line;
     }
 
     public SalesOrder? GetOrderByNumber(string orderNumber)
@@ -120,7 +122,7 @@ public class SalesOrderService
         var order = GetOrderByNumber(orderNumber);
         if (order == null)
         {
-            throw new ArgumentException("Order does not exist.");
+            throw new OrderNotFoundException("Order does not exist.");
         }
         
         return order.GetOrderTotalPrice();

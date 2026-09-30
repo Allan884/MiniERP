@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data.Common;
 using ExcelMerger.Exceptions;
 
+
 namespace MiniERP.API.Controllers;
 
 [Route("api/salesorders")] // Define the route for the controller
@@ -40,16 +41,33 @@ public class SalesOrderController : ControllerBase // Inherit from ControllerBas
     [HttpPost] // POST api/salesorders
     public IActionResult CreateSalesOrder([FromBody] CreateSalesOrderRequest request)
     {
-        var customerId = request.CustomerId;
-        var salesOrder = salesOrderService.CreateSalesOrder(customerId);
 
+        if (request.CustomerId == Guid.Empty)
+        {
+            return BadRequest();
+        }
+
+
+        SalesOrder salesOrder;
+        try
+        {
+            salesOrder = salesOrderService.CreateSalesOrder(request.CustomerId);
+        }
+        catch (CustomerNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ArgumentException)
+        {
+            return BadRequest();
+        }
+        
         var response = new SalesOrderResponse
         {
-            CustomerId = salesOrder.CustomerId,
             OrderNumber = salesOrder.OrderNumber
         };
 
-        return Ok(response);
+        return Created("", response);
     }
 
     [HttpPost("{orderNumber}/lines")]
@@ -63,17 +81,34 @@ public class SalesOrderController : ControllerBase // Inherit from ControllerBas
         var quantity = request.Quantity;
         var deliveryDate = request.DeliveryDate;
 
+        SalesOrderLine line;
 
         try
         {
-           salesOrderService.AddLineToSalesOrder(orderNumber, productId, quantity, deliveryDate); 
+           line = salesOrderService.AddLineToSalesOrder(orderNumber, productId, quantity, deliveryDate); 
  
         }
         catch (ProductNotFoundException)
         {
             return NotFound();
         }
+        catch (OrderNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ArgumentException)
+        {
+            return BadRequest();
+        }
 
-        return Ok();
+        var response = new SalesOrderLineResponse{
+            ProductName = line.ProductName,
+            Quantity = line.Quantity,
+            UnitPrice = line.UnitPrice,
+            RowTotalPrice = line.RowTotalPrice,
+            DeliveryDate = line.DeliveryDate
+        };
+
+        return Created("", response);
     }
 }
